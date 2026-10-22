@@ -1,0 +1,6 @@
+{
+    "Logistic Regression": 98.25,
+    "SVM": 98.25,
+    "Random Forest": 95.61,
+    "XGBoost": 94.74
+}

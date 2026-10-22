@@ -1,0 +1,103 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Disease Prediction System</title>
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Disease Prediction System</h1>
+        <p class="subtitle">Machine Learning Project</p>
+
+        <h2>Multiple Disease Prediction Demo</h2>
+        <p>
+            Select a disease and a sample number to see how the
+            trained machine learning model classifies an example
+            from the demonstration dataset.
+        </p>
+
+        <form method="POST">
+            <label for="disease">Choose a disease:</label>
+
+            <select name="disease" id="disease" onchange="updateSampleRange()">
+                <option value="breast"
+                    {% if selected_disease == 'breast' %}selected{% endif %}>
+                    Breast Cancer
+                </option>
+                <option value="heart"
+                    {% if selected_disease == 'heart' %}selected{% endif %}>
+                    Heart Disease
+                </option>
+                <option value="diabetes"
+                    {% if selected_disease == 'diabetes' %}selected{% endif %}>
+                    Diabetes
+                </option>
+            </select>
+
+            <label for="sample_number">
+                Sample number (1–<span id="maxSample">{{ sample_counts.get(selected_disease, 569) }}</span>):
+            </label>
+
+            <input
+                type="number"
+                name="sample_number"
+                id="sample_number"
+                min="1"
+                max="{{ sample_counts.get(selected_disease, 569) }}"
+                value="{{ sample_number }}"
+                required
+            >
+
+            <button type="submit">Predict Result</button>
+        </form>
+
+        {% if prediction %}
+            <div class="result">
+                <h2>Prediction Result</h2>
+                <p>
+                    Classification:
+                    <strong>{{ prediction }}</strong>
+                </p>
+                {% if algorithm %}
+                    <p>Model: {{ algorithm }}</p>
+                {% endif %}
+            </div>
+        {% endif %}
+
+        {% if error %}
+            <div class="error">
+                <p>{{ error }}</p>
+            </div>
+        {% endif %}
+
+        <p class="disclaimer">
+            Educational ML Demonstration | Not for medical diagnosis
+        </p>
+    </div>
+
+    <script>
+        const sampleCounts = {
+            breast: {{ sample_counts.get('breast', 569) }},
+            heart: {{ sample_counts.get('heart', 303) }},
+            diabetes: {{ sample_counts.get('diabetes', 520) }}
+        };
+
+        function updateSampleRange() {
+            const disease = document.getElementById("disease").value;
+            const sampleInput = document.getElementById("sample_number");
+            const maxSample = sampleCounts[disease];
+
+            sampleInput.max = maxSample;
+            document.getElementById("maxSample").textContent = maxSample;
+
+            if (Number(sampleInput.value) > maxSample) {
+                sampleInput.value = 1;
+            }
+        }
+    </script>
+</body>
+</html>
